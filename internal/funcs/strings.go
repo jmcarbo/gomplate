@@ -19,6 +19,7 @@ import (
 	gompstrings "github.com/hairyhenderson/gomplate/v4/strings"
 
 	"github.com/gosimple/slug"
+	"github.com/russross/blackfriday/v2"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -39,6 +40,7 @@ func CreateStringFuncs(ctx context.Context) map[string]interface{} {
 	f["quote"] = ns.Quote
 	f["shellQuote"] = ns.ShellQuote
 	f["squote"] = ns.Squote
+	f["markdown"] = ns.Markdown
 
 	// these are legacy aliases with non-pipelinable arg order
 	f["contains"] = ns.oldContains
@@ -408,4 +410,9 @@ func (StringFuncs) RuneCount(args ...interface{}) (int, error) {
 		s += conv.ToString(arg)
 	}
 	return utf8.RuneCountInString(s), nil
+}
+
+// Markdown -
+func (StringFuncs) Markdown(in interface{}) (string, error) {
+	return string(blackfriday.Run([]byte(conv.ToString(in)))), nil
 }
